@@ -24,62 +24,65 @@ import com.ibm.watson.developer_cloud.discovery.v1.model.query.QueryResponse;
  */
 public class DiscoveryQuery {
 
-  private String collectionId;
+	private String collectionId;
 
-  private Discovery discovery;
+	private Discovery discovery;
 
-  private String environmentId;
+	private String environmentId;
 
-  private String password;
+	private String password;
 
-  private String userName;
+	private String userName;
 
-  private String queryFields = "none";
+	private String queryFields = "none";
 
-  /**
-   * Instantiates a new discovery query.
-   */
-  public DiscoveryQuery() {
-    userName = System.getenv("DISCOVERY_USERNAME");
-    password = System.getenv("DISCOVERY_PASSWORD");
-    collectionId = System.getenv("DISCOVERY_COLLECTION_ID");
-    environmentId = System.getenv("DISCOVERY_ENVIRONMENT_ID");
-    queryFields = System.getenv("DISCOVERY_QUERY_FIELDS");
+	/**
+	 * Instantiates a new discovery query.
+	 */
+	public DiscoveryQuery() {
+		userName = System.getenv("DISCOVERY_USERNAME");
+		password = System.getenv("DISCOVERY_PASSWORD");
+		collectionId = System.getenv("DISCOVERY_COLLECTION_ID");
+		environmentId = System.getenv("DISCOVERY_ENVIRONMENT_ID");
+		queryFields = System.getenv("DISCOVERY_QUERY_FIELDS");
 
-    discovery = new Discovery(Constants.DISCOVERY_VERSION);
-    discovery.setEndPoint(Constants.DISCOVERY_URL);
-    discovery.setUsernameAndPassword(userName, password);
-  }
+		discovery = new Discovery(Constants.DISCOVERY_VERSION);
+		discovery.setEndPoint(Constants.DISCOVERY_URL);
+		discovery.setUsernameAndPassword(userName, password);
+	}
 
-  /**
-   * Use the Watson Developer Cloud SDK to send the user's query to the discovery service.
-   *
-   * @param userQuery The user's query to be sent to the discovery service
-   * @return The query responses obtained from the discovery service
-   * @throws Exception the exception
-   */
-  public QueryResponse query(String userQuery) throws Exception {
-    QueryRequest.Builder queryBuilder = new QueryRequest.Builder(environmentId, collectionId);
-    
-    StringBuilder sb = new StringBuilder();
-    
-    if(queryFields == null || queryFields.length() == 0 || queryFields.equalsIgnoreCase("none")) {
-      sb.append(userQuery);
-    } else {
-      StringTokenizer st = new StringTokenizer(queryFields, ",");
-      while (st.hasMoreTokens()) {
-        sb.append(st.nextToken().trim());
-        sb.append(":");
-        sb.append(userQuery);
-        if (st.hasMoreTokens()) {
-          sb.append(",");
-        }
-      }
-    }
+	/**
+	 * Use the Watson Developer Cloud SDK to send the user's query to the
+	 * discovery service.
+	 *
+	 * @param userQuery
+	 *            The user's query to be sent to the discovery service
+	 * @return The query responses obtained from the discovery service
+	 * @throws Exception
+	 *             the exception
+	 */
+	public QueryResponse query(String userQuery) throws Exception {
+		QueryRequest.Builder queryBuilder = new QueryRequest.Builder(environmentId, collectionId);
 
-    queryBuilder.query(sb.toString());
-    QueryResponse queryResponse = discovery.query(queryBuilder.build()).execute();
+		StringBuilder sb = new StringBuilder();
 
-    return queryResponse;
-  }
+		if (queryFields == null || queryFields.length() == 0 || queryFields.equalsIgnoreCase("none")) {
+			sb.append(userQuery);
+		} else {
+			StringTokenizer st = new StringTokenizer(queryFields, ",");
+			while (st.hasMoreTokens()) {
+				sb.append(st.nextToken().trim());
+				sb.append(":");
+				sb.append(userQuery);
+				if (st.hasMoreTokens()) {
+					sb.append(",");
+				}
+			}
+		}
+
+		queryBuilder.query(sb.toString());
+		QueryResponse queryResponse = discovery.query(queryBuilder.build()).execute();
+
+		return queryResponse;
+	}
 }

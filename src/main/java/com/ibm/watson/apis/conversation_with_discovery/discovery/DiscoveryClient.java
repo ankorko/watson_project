@@ -68,6 +68,7 @@ public class DiscoveryClient {
    *         possible answer to the user's query
    */
   private List<DocumentPayload> createPayload(JsonElement resultsElement) {
+	//logger.error(resultsElement);
     logger.info(Messages.getString("Service.CREATING_DISCOVERY_PAYLOAD"));
     List<DocumentPayload> payload = new ArrayList<DocumentPayload>();
     JsonArray jarray = resultsElement.getAsJsonArray();
@@ -77,8 +78,10 @@ public class DiscoveryClient {
         DocumentPayload documentPayload = new DocumentPayload();
         String id = jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_ID).toString().replaceAll("\"", "");
         documentPayload.setId(id);
-        documentPayload.setTitle(
-            jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_TITLE).toString().replaceAll("\"", ""));
+        if (jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_TITLE) != null) {
+        	documentPayload.setTitle(
+                    jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_TITLE).toString().replaceAll("\"", ""));
+        } 
         if (jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_BODY) != null) {
           String body = jarray.get(i).getAsJsonObject().get(Constants.DISCOVERY_FIELD_BODY).toString().replaceAll("\"",
               "");
@@ -104,6 +107,7 @@ public class DiscoveryClient {
         } else {
           documentPayload.setConfidence("0.0");
         }
+        documentPayload.setSourceUrl("");
         payload.add(i, documentPayload);
       }
     } else {
